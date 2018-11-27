@@ -1,0 +1,40 @@
+{%- extends "apostrophe-modal:baseSlideable.html" -%}
+{%- import 'apostrophe-ui:components/buttons.html' as buttons -%}
+
+{%- block modalClass -%}
+  apos-pieces-export {{ data.options.name | css }}-import apos-ui-modal-no-sidebar apos-modal-slideable
+{%- endblock -%}
+
+{%- block controls -%}
+  {{ buttons.base('Cancel', { action: 'cancel' }, 'apos-button--minor apos-pieces-export-cancel') }}
+{%- endblock -%}
+
+{%- block label -%}
+  {{ __('Export %s', data.options.pluralLabel) }}
+{%- endblock -%}
+
+{%- block body -%}
+  <div class="apos-pieces-export-body">
+    <form class="apos-form" data-apos-form enctype="multipart/form-data" method="POST">
+      {% if apos.modules['apostrophe-workflow'] %}
+        <select name="draft-or-live">
+          <option value="draft">{{ __('Draft') }}
+          <option value="live">{{ __('Live') }}
+        </select>
+      {% endif %}
+      <select name="extension">
+        {%- for extension, details in data.exportFormats -%}
+          <option value="{{ extension }}">{{ __(details.label) }}
+        {%- endfor -%}
+      </select>
+      {{ buttons.major('Export All', { action: 'export' }, 'apos-button--major apos-pieces-export-submit') }}
+    </form>
+  </div>
+{%- endblock -%}
+
+{%- block instructions -%}
+  Choose a format, then click "Export All" to begin the export process.
+  {% if apos.modules['apostrophe-workflow'] %}
+    Be sure to indicate whether you want the draft documents or the live documents for the current locale. By default, the draft documents are exported. If you wish to export multiple locales, you will need to export each locale individually.
+  {% endif %}
+{%- endblock -%}
