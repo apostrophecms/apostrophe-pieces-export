@@ -13,17 +13,17 @@ apos.define('apostrophe-pieces-export-modal', {
       self.$submit = self.$el.find('[data-apos-export]');
       self.$submit.click(function() {
         var draftOrLive = self.$el.find('[name="draft-or-live"]').val();
-        var format = self.$el.find('[name="format"]').val();
+        var extension = self.$el.find('[name="extension"]').val();
         self.api('export', {
           draftOrLive: draftOrLive,
-          format: format
+          extension: extension
         }, function(result) {
-          if (data.result.status !== 'ok') {
-            alert(data.result.status);
+          if (result.status !== 'ok') {
+            alert(result.status);
             return;
           }
           self.hide();
-          apos.jobs.progress(data.result.jobId);
+          apos.jobs.progress(result.jobId);
         });
         return false;
       });

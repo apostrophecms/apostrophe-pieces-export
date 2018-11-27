@@ -30,5 +30,9 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.1.0",
     "eslint-plugin-standard": "^3.0.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.3",
+    "csv-stringify": "^5.0.0"
   }
 }

@@ -22,9 +22,10 @@
           <option value="live">{{ __('Live') }}
         </select>
       {% endif %}
+      {{ apos.log(data.exportFormats) }}
       <select name="extension">
         {%- for extension, details in data.exportFormats -%}
-          <option value="{{ extension }}">{{ __(details.label) }}
+          <option value="{{ extension }}">{{ __(details.label) }}</option>
         {%- endfor -%}
       </select>
       {{ buttons.major('Export All', { action: 'export' }, 'apos-button--major apos-pieces-export-submit') }}
