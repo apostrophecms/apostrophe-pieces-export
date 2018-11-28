@@ -265,7 +265,15 @@ module.exports = {
           }
           record[field.name] = value;
         });
-        return setImmediate(callback);
+        return setImmediate(function() {
+          return self.beforeExport(req, piece, record, callback);
+        });
+      };
+
+      // For your overriding convenience
+
+      self.beforeExport = function(req, piece, record, callback) {
+        return callback(null);
       };
 
       self.exportPushDefineRelatedTypes = function () {

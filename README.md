@@ -29,7 +29,7 @@ The exporter relies on a simple conversion from each standard field type to a st
 You can change this by implementing a beforeExport method in your pieces module. This method simply adds extra data from `piece` to `record`, which is a simple object in which the keys are property names and the values are strings representing those properties:
 
 ```javascript
-self.beforeExport = function(job, piece, record, callback) {
+self.beforeExport = function(req, piece, record, callback) {
   // Export an access counter
   record.accesses = (piece.accesses || '').toString();
   return callback(null);
