@@ -6,25 +6,25 @@ apos.define('apostrophe-pieces-export-modal', {
 
   source: 'export-modal',
 
-  construct: function(self, options) {
+  construct: function (self, options) {
     self.manager = options.manager;
     self.canceling = false;
-    self.beforeShow = function(callback) {
+    self.beforeShow = function (callback) {
       self.$submit = self.$el.find('[data-apos-export]');
-      self.$submit.click(function() {
+      self.$submit.click(function () {
         var draftOrLive = self.$el.find('[name="draft-or-live"]').val();
         var extension = self.$el.find('[name="extension"]').val();
         self.api('export', {
           draftOrLive: draftOrLive,
           extension: extension
-        }, function(result) {
+        }, function (result) {
           if (result.status !== 'ok') {
             alert(result.status);
             return;
           }
-          self.afterHide = function() {
+          self.afterHide = function () {
             apos.modules['apostrophe-jobs'].progress(result.jobId, {
-              success: function(result) {
+              success: function (result) {
                 // Download the report
                 window.location.href = result.url;
               }

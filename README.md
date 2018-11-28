@@ -20,7 +20,7 @@ modules: {
 
 ## Exporting a file
 
-Just click the "export" button in the "manage" view of your pieces. A progress display will appear, then you will be invited to download and save a file.
+Just click the "export" button in the "manage" view of your pieces. A progress display will appear. Once the export has completed, you will be instructed to click "Done," at which point the file will be downloaded. **For space and security reasons, export files expire after one hour,** so keep this in mind if you walk away from the export process.
 
 ## Extending the export process for your piece type
 
@@ -72,24 +72,20 @@ self.exportAddFormat('xml', {
 
 **2. Callback interface:** a function that, accepting (`filename`, `objects`, `callback`), writes a complete file containing the given array of objects in your format and then invokes the callback. Each object in the array will contain all of the exported schema fields as properties, with string values.
 
-This option is to be avoided for very large files but it is useful when exporting formats for which no streaming interface
-is available.
-
-`convert` should be set to `'string'` if the properties of each object read
-from the stream are always strings, or `form` if they correspond to the format submitted
-by apostrophe's forms on the front end. If in doubt, use `string`.
+This option is to be avoided for very large exports but it is useful when exporting formats for which no streaming interface is available.
 
 Here is what an implementation for `.csv` files would look like if we didn't have it already:
 
 ```javascript
 self.exportAddFormat('csv', {
   label: 'CSV',
-  convert: 'string',
-  output: function() {
+  output: function(filename) {
     // csv-stringify already provides the right kind of
     // stream interface, including auto-discovery of headers
     // from the properties of the first object exported
-    return require('csv-stringify')();
+    const out = stringify({ header: true });
+    out.pipe(fs.createWriteStream(filename));
+    return out;
   }
 });
 ```

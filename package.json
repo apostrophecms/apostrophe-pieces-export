@@ -1,10 +1,10 @@
 {
   "name": "apostrophe-pieces-export",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "Export pieces for ApostropheCMS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha && eslint ."
   },
   "repository": {
     "type": "git",
@@ -22,14 +22,17 @@
   },
   "homepage": "https://github.com/apostrophecms/apostrophe-pieces-export#readme",
   "devDependencies": {
+    "apostrophe": "^2.72.1",
     "eslint": "^4.2.0",
-    "eslint-config-punkave": "^1.0.8",
+    "eslint-config-apostrophe": "^2.0.2",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.1.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.0.1",
+    "mocha": "^5.0.0",
+    "request": "^2.88.0"
   },
   "dependencies": {
     "async": "^2.6.1",
