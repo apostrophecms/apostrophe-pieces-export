@@ -26,25 +26,17 @@ Just click the "export" button in the "manage" view of your pieces. A progress d
 
 The exporter relies on a simple conversion from each standard field type to a string. That conversion works well for the same field types that import well with `apostrophe-pieces-importer`.
 
-You can change this by implementing a beforeExport method in your pieces module. This method simply adds extra data from `piece` to `record`, which is a simple object in which the keys are property names and the values are strings representing those properties:
+You can change this by implementing a beforeExport method in your pieces module. In this method a simple conversion has already been performed, but you may override properties of `record` based on what you see in `piece`.
 
 ```javascript
 self.beforeExport = function(req, piece, record, callback) {
-  // Export an access counter
-  record.accesses = (piece.accesses || '').toString();
+  // Export access counter that is not in schema
+  req.accesses = piece.accesses || 0;
   return callback(null);
 };
 ```
 
-**All of the properties you add here still must appear in the schema. Otherwise they will not be successfully included in the export.** If the fields are not really meant to be editable via the schema, you can add them like this via `addFields`:
-
-```javascript
-{
-  type: 'string',
-  name: 'accesses',
-  contextual: true
-}
-```
+**Always include a given property in every object exported, even if it is just empty.**
 
 ## File formats beyond CSV, TSV and Excel
 
