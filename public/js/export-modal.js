@@ -22,8 +22,15 @@ apos.define('apostrophe-pieces-export-modal', {
             alert(result.status);
             return;
           }
+          self.afterHide = function() {
+            apos.modules['apostrophe-jobs'].progress(result.jobId, {
+              success: function(result) {
+                // Download the report
+                window.location.href = result.url;
+              }
+            });
+          };
           self.hide();
-          apos.jobs.progress(result.jobId);
         });
         return false;
       });

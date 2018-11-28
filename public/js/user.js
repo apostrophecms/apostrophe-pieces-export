@@ -9,7 +9,6 @@ apos.define('apostrophe-pieces', {
   construct: function(self, options) {
 
     self.exportClickHandlers = function() {
-      // The rest of these are not part of the admin bar, follow our own convention
       apos.ui.link('apos-export', self.name, function($button, _id) {
         self.export();
       });

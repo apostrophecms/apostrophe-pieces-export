@@ -17,17 +17,22 @@
   <div class="apos-pieces-export-body">
     <form class="apos-form" data-apos-form enctype="multipart/form-data" method="POST">
       {% if apos.modules['apostrophe-workflow'] %}
-        <select name="draft-or-live">
-          <option value="draft">{{ __('Draft') }}
-          <option value="live">{{ __('Live') }}
-        </select>
+        <fieldset>
+          <label>Draft content, or live content?</label>
+          <select name="draft-or-live">
+            <option value="draft">{{ __('Draft') }}
+            <option value="live">{{ __('Live') }}
+          </select>
+        </fieldset>
       {% endif %}
-      {{ apos.log(data.exportFormats) }}
-      <select name="extension">
-        {%- for extension, details in data.exportFormats -%}
-          <option value="{{ extension }}">{{ __(details.label) }}</option>
-        {%- endfor -%}
-      </select>
+      <fieldset>
+        <label>What file format?</label>
+        <select name="extension">
+          {%- for extension, details in data.exportFormats -%}
+            <option value="{{ extension }}">{{ __(details.label) }}</option>
+          {%- endfor -%}
+        </select>
+      </fieldset>
       {{ buttons.major('Export All', { action: 'export' }, 'apos-button--major apos-pieces-export-submit') }}
     </form>
   </div>

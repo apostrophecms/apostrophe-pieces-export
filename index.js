@@ -1,8 +1,7 @@
 const stringify = require('csv-stringify');
 const _ = require('lodash');
 const fs = require('fs');
-const Promise = require('bluebird');
-console.log('requiring');
+const async = require('async');
 
 module.exports = {
   improve: 'apostrophe-pieces',
@@ -20,31 +19,33 @@ module.exports = {
   construct: function(self, options) {
 
     if (options.export) {
-      console.log('exporting');
       self.exportFormats = {
         csv: {
           label: 'CSV (comma-separated values)',
           output: function(filename) {
-            return stringify({}).pipe(fs.createWriteStream(filename));
+            const out = stringify({ header: true });
+            out.pipe(fs.createWriteStream(filename));
+            return out;
           }
         },
         tsv: {
           label: 'TSV (tab-separated values)',
           output: function(filename) {
-            return stringify({ delimiter: '\t' }).pipe(fs.createWriteStream(filename));
+            const out = stringify({ header: true, delimiter: '\t' });
+            out.pipe(fs.createWriteStream(filename));
+            return out;
           }
         },
         xlsx: require('./lib/excel.js')(self)
       };
 
-      var superGetManagerControls = self.getManagerControls;
+      let superGetManagerControls = self.getManagerControls;
       self.getManagerControls = function(req) {
-        console.log('gmc');
-        var controls = _.clone(superGetManagerControls(req));
+        let controls = _.clone(superGetManagerControls(req));
         const addIndex = _.findIndex(controls, function(control) {
           return control.action.match(/^(upload|create)/);
         });
-        var control = {
+        let control = {
           type: 'minor',
           label: 'Export',
           action: 'export-' + self.apos.utils.cssName(self.name)
@@ -54,7 +55,6 @@ module.exports = {
         } else {
           controls.push(control);
         }
-        console.log(controls);
         return controls;
       };
 
@@ -77,35 +77,39 @@ module.exports = {
         });
 
         self.route('post', 'export', function(req, res) {
-          var draftOrLive = self.apos.launder.string(req.body.draftOrLive);
-          var extension = self.apos.launder.string(req.body.extension);
+          let draftOrLive = self.apos.launder.string(req.body.draftOrLive);
+          let extension = self.apos.launder.string(req.body.extension);
           if (!self.exportFormats[extension]) {
             return res.send({ status: 'invalid' });
           }
-          var format = self.exportFormats[extension];
+          let format = self.exportFormats[extension];
           self.apos.modules['apostrophe-jobs'].runNonBatch(req,
-            doTheWork,
+            function(req, reporting, callback) {
+              return doTheWork(req, reporting, function(err) {
+                return callback(err);
+              });
+            },
             {
-              label: 'Exporting ' + self.pluralLabel
+              labels: {
+                title: 'Exporting ' + self.pluralLabel,
+                completed: 'Completed — click "Done" to download'
+              }
             }
           );
           function doTheWork(req, reporting, callback) {
-            var filename = self.apos.attachments.uploadfs.getTempPath() + '/' + self.apos.utils.generateId() + '-export.' + extension;
+            let filename = self.apos.attachments.uploadfs.getTempPath() + '/' + self.apos.utils.generateId() + '-export.' + extension;
             let out;
             let data;
             let reported = false;
+
+            if (draftOrLive === 'live') {
+              // Hack to fetch the live docs
+              req.locale = req.locale.replace(/\-draft$/, '');
+            }
+
             if (format.output.length === 1) {
               // Now kick off the stream processing
               out = format.output(filename);
-              out.on('error', function(err) {
-                reported = true;
-                return callback(err);
-              });
-              out.on('close', function() {
-                if (!reported) {
-                  return callback(null);
-                }
-              });
             } else {
               // Create a simple writable stream that just buffers
               // up the objects. Allows the simpler type of output function
@@ -120,8 +124,9 @@ module.exports = {
                   return format.output(filename, data, function(err) {
                     if (err) {
                       out.emit('error', err);
+                    } else {
+                      out.emit('finish');
                     }
-                    out.emit('close');
                   });
                 },
                 on: function(name, fn) {
@@ -137,8 +142,50 @@ module.exports = {
               };
             }
 
-            const lastId = '';
-            return nextBatch(callback);
+            out.on('error', function(err) {
+              if (!reported) {
+                reported = true;
+                cleanup();
+                return callback(err);
+              }
+            });
+            out.on('finish', function() {
+              if (!reported) {
+                reported = true;
+                // Must copy it to uploadfs, the server that created it
+                // and the server that delivers it might be different
+                const downloadPath = '/exports/' + self.apos.utils.generateId() + '.' + extension;
+                return self.apos.attachments.uploadfs.copyIn(filename, downloadPath, function(err) {
+                  if (err) {
+                    cleanup();
+                    return callback(err);                     
+                  }
+                  reporting.setResults({
+                    url: self.apos.attachments.uploadfs.getUrl() + downloadPath
+                  });
+                  cleanup();
+                  // Report is available for one hour
+                  setTimeout(function() {
+                    self.apos.attachments.uploadfs.remove(downloadPath, function(err) {
+                      if (err) {
+                        self.apos.utils.error(err);
+                      }
+                    });
+                  }, 1000 * 60 * 60);
+                  return callback(null);
+                });
+                return callback(null);
+              }
+            });
+
+            let lastId = '';
+            nextBatch(callback);
+
+            // work around a bug in apostrophe (fixed in newer apostrophe):
+            // it tests for a `then` property on the return value without
+            // first making sure it is at least an object
+            return {};
+
             function nextBatch(callback) {
               return self.find(req).sort({ _id: 1 }).and({ _id: { $gt: lastId } }).limit(100).toArray(function(err, batch) {
                 if (err) {
@@ -149,8 +196,16 @@ module.exports = {
                 }
                 lastId = batch[batch.length - 1]._id;
                 return async.eachSeries(batch, function(piece, callback) {
-                  const record = {};
-                  return self.exportRecord(req, piece, record, callback);
+                  let record = {};
+                  return self.exportRecord(req, piece, record, function(err) {
+                    if (err) {
+                      reporting.bad();
+                    } else {
+                      reporting.good();
+                    }
+                    out.write(record);
+                    return callback(null);
+                  });
                 }, function(err) {
                   if (err) {
                     return callback(err);
@@ -161,7 +216,13 @@ module.exports = {
             }
             function close(callback) {
               out.end();
-              return callback(err);
+            }
+            function cleanup() {
+              try {
+                fs.unlinkSync(filename);
+              } catch (e) {
+                self.apos.utils.error(e);
+              }
             }
           }
         });
@@ -175,8 +236,8 @@ module.exports = {
         // that is a plausible upgrade). Export schema fields only,
         // plus _id.
         record._id = piece._id;
-        _.each(schema, function(field) {
-          const value = piece[field.name];
+        schema.forEach(function(field) {
+          let value = piece[field.name];
           if ((typeof value) === 'object') {
             if (field.type.match(/^joinByArray/)) {
               value = (value || []).map(function(item) {

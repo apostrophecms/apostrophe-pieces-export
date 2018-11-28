@@ -32,7 +32,9 @@
     "eslint-plugin-standard": "^3.0.1"
   },
   "dependencies": {
-    "bluebird": "^3.5.3",
-    "csv-stringify": "^5.0.0"
+    "async": "^2.6.1",
+    "csv-stringify": "^5.0.0",
+    "lodash": "^4.17.11",
+    "xlsx": "^0.14.1"
   }
 }
