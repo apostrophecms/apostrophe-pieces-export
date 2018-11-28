@@ -145,7 +145,7 @@ module.exports = {
                   fn(v);
                 });
               },
-              listeners: []
+              listeners: {}
             };
           }
 
@@ -198,7 +198,7 @@ module.exports = {
                 return callback(err);
               }
               if (!batch.length) {
-                return close(callback);
+                return close();
               }
               lastId = batch[batch.length - 1]._id;
               return async.eachSeries(batch, function (piece, callback) {
@@ -220,7 +220,7 @@ module.exports = {
               });
             });
           }
-          function close (callback) {
+          function close() {
             out.end();
           }
           function cleanup () {
@@ -261,7 +261,6 @@ module.exports = {
             if (value) {
               value = value.toString();
             }
-            record[field.name] = value;
           }
           record[field.name] = value;
         });

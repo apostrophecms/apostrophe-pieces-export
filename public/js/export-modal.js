@@ -19,7 +19,7 @@ apos.define('apostrophe-pieces-export-modal', {
           extension: extension
         }, function (result) {
           if (result.status !== 'ok') {
-            alert(result.status);
+            apos.notify(result.status, { type: 'error' });
             return;
           }
           self.afterHide = function () {
