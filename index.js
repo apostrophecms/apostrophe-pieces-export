@@ -1,4 +1,4 @@
-const stringify = require('csv-stringify');
+const stringify = require('csv-stringify/lib/es5');
 const _ = require('lodash');
 const fs = require('fs');
 const async = require('async');
