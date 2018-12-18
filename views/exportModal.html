@@ -20,11 +20,19 @@
         <fieldset>
           <label>Draft content, or live content?</label>
           <select name="draft-or-live">
-            <option value="draft">{{ __('Draft') }}
-            <option value="live">{{ __('Live') }}
+            <option value="draft">{{ __('Draft') }}</option>
+            <option value="live">{{ __('Live') }}</option>
           </select>
         </fieldset>
       {% endif %}
+      <fieldset>
+        <label>Published, or unpublished?</label>
+        <select name="published">
+          <option value="yes">{{ __('Published') }}</option>
+          <option value="no">{{ __('Unpublished') }}</option>
+          <option value="both">{{ __('Both') }}</option>
+        </select>
+      </fieldset>
       <fieldset>
         <label>What file format?</label>
         <select name="extension">

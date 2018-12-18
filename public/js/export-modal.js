@@ -13,9 +13,11 @@ apos.define('apostrophe-pieces-export-modal', {
       self.$submit = self.$el.find('[data-apos-export]');
       self.$submit.click(function () {
         var draftOrLive = self.$el.find('[name="draft-or-live"]').val();
+        var published = self.$el.find('[name="published"]').val();
         var extension = self.$el.find('[name="extension"]').val();
         self.api('export', {
           draftOrLive: draftOrLive,
+          published: published,
           extension: extension
         }, function (result) {
           if (result.status !== 'ok') {

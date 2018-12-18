@@ -77,6 +77,7 @@ module.exports = {
 
         self.route('post', 'export', function (req, res) {
           let draftOrLive = self.apos.launder.string(req.body.draftOrLive);
+          let published = self.apos.launder.string(req.body.published);
           let extension = self.apos.launder.string(req.body.extension);
           if (!self.exportFormats[extension]) {
             return res.send({ status: 'invalid' });
@@ -87,6 +88,7 @@ module.exports = {
             function (req, reporting, callback) {
               return self.exportRun(req, reporting, {
                 draftOrLive: draftOrLive,
+                published: published,
                 extension: extension,
                 format: format
               }, callback);
@@ -94,7 +96,7 @@ module.exports = {
             {
               labels: {
                 title: 'Exporting ' + self.pluralLabel,
-                completed: 'Completed — click "Done" to download'
+                completed: 'Completed — click "Done" to download'
               }
             }
           );
@@ -102,6 +104,7 @@ module.exports = {
 
         self.exportRun = function (req, reporting, options, callback) {
           const draftOrLive = options.draftOrLive;
+          const published = options.published === 'both' ? null : options.published === 'yes';
           const extension = options.extension;
           const format = options.format;
           let filename = self.apos.attachments.uploadfs.getTempPath() + '/' + self.apos.utils.generateId() + '-export.' + extension;
@@ -193,7 +196,7 @@ module.exports = {
           return {};
 
           function nextBatch (callback) {
-            return self.find(req).sort({ _id: 1 }).and({ _id: { $gt: lastId } }).limit(options.batchSize || 100).toArray(function (err, batch) {
+            return self.find(req).published(published).sort({ _id: 1 }).and({ _id: { $gt: lastId } }).limit(options.batchSize || 100).toArray(function (err, batch) {
               if (err) {
                 return callback(err);
               }
