@@ -18,7 +18,7 @@
     <form class="apos-form" data-apos-form enctype="multipart/form-data" method="POST">
       {% if apos.modules['apostrophe-workflow'] %}
         <fieldset>
-          <label>Draft content, or live content?</label>
+          <label>{{ __('Draft content, or live content?') }}</label>
           <select name="draft-or-live">
             <option value="draft">{{ __('Draft') }}</option>
             <option value="live">{{ __('Live') }}</option>
@@ -26,7 +26,7 @@
         </fieldset>
       {% endif %}
       <fieldset>
-        <label>Published, or unpublished?</label>
+        <label>{{ __('Published, or unpublished?') }}</label>
         <select name="published">
           <option value="yes">{{ __('Published') }}</option>
           <option value="no">{{ __('Unpublished') }}</option>
@@ -34,7 +34,7 @@
         </select>
       </fieldset>
       <fieldset>
-        <label>What file format?</label>
+        <label>{{ __('What file format?') }}</label>
         <select name="extension">
           {%- for extension, details in data.exportFormats -%}
             <option value="{{ extension }}">{{ __(details.label) }}</option>
