@@ -16,6 +16,20 @@ modules: {
 }
 ```
 
+You can specify properties to omit by setting an `omitFields` option. This option takes an array of field names. For example, if you wanted to exclude the `trash` field from the export, you'd configure your piece like this:
+
+```javascript
+modules: {
+  'apostrophe-pieces-export': {},
+  // other modules...
+  'my-module-that-extends-pieces': {
+    export: {
+      omitFields: ['trash']
+    }
+  }
+}
+```
+
 **No changes to templates are required to enable the export button.** It will appear automatically in the "Manage" dialog box for the appropriate type of piece.
 
 ## Exporting a file
@@ -60,7 +74,7 @@ self.exportAddFormat('xml', {
 
 `output` can be one of two things:
 
-**1. Stream interface:** a function that, taking a `filename` argument, returns a writable Node.js object stream that objects can be piped into; the stream should support the `write()` method in the usual way. The `write()` method of the stream must accept objects whose property names correspond to the schema and whose values correspond to each row of output. *Generating a "header row," if desired, is your responsibility and can be inferred from the first data object you are given.* 
+**1. Stream interface:** a function that, taking a `filename` argument, returns a writable Node.js object stream that objects can be piped into; the stream should support the `write()` method in the usual way. The `write()` method of the stream must accept objects whose property names correspond to the schema and whose values correspond to each row of output. *Generating a "header row," if desired, is your responsibility and can be inferred from the first data object you are given.*
 
 **2. Callback interface:** a function that, accepting (`filename`, `objects`, `callback`), writes a complete file containing the given array of objects in your format and then invokes the callback. Each object in the array will contain all of the exported schema fields as properties, with string values.
 

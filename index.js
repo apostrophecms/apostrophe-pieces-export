@@ -245,6 +245,9 @@ module.exports = {
         // plus _id.
         record._id = piece._id;
         schema.forEach(function (field) {
+          if (self.options.export.omitFields && self.options.export.omitFields.includes(field.name)) {
+            return;
+          }
           let value = piece[field.name];
           if ((typeof value) === 'object') {
             if (field.type.match(/^joinByArray/)) {
