@@ -23,8 +23,6 @@ modules: {
   'apostrophe-pieces-export': {},
   // other modules...
   'my-module-that-extends-pieces': {
-    // Without this, there is no export functionality for this type.
-    // Not all types are great candidates for exports.
     export: {
       omitFields: ['trash']
     }
