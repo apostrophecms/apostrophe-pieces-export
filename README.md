@@ -31,7 +31,7 @@ You can change this by implementing a beforeExport method in your pieces module.
 ```javascript
 self.beforeExport = function(req, piece, record, callback) {
   // Export access counter that is not in schema
-  req.accesses = piece.accesses || 0;
+  record.accesses = piece.accesses || 0;
   return callback(null);
 };
 ```
