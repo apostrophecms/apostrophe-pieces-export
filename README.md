@@ -16,7 +16,7 @@ modules: {
 }
 ```
 
-You can specify properties to omit by setting an `exportOmitProperties` option. This option takes an array of field names. For example, if you wanted to exclude the `trash` field from the export, you'd configure your piece like this:
+You can specify properties to omit by setting an `omitFields` option. This option takes an array of field names. For example, if you wanted to exclude the `trash` field from the export, you'd configure your piece like this:
 
 ```javascript
 modules: {
@@ -25,8 +25,9 @@ modules: {
   'my-module-that-extends-pieces': {
     // Without this, there is no export functionality for this type.
     // Not all types are great candidates for exports.
-    export: true,
-    exportOmitProperties: ['trash']
+    export: {
+      omitFields: ['trash']
+    }
   }
 }
 ```

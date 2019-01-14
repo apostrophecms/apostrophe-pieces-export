@@ -237,14 +237,7 @@ module.exports = {
       };
 
       self.exportRecord = function (req, piece, record, callback) {
-        let schema = self.schema;
-        if (self.options.exportOmitProperties) {
-          for (let prop of self.options.exportOmitProperties) {
-            schema = schema.filter( (obj) => {
-              return obj.name !== prop;
-            });
-          }
-        }
+        const schema = self.schema;
         // Schemas don't have built-in exporters, for strings or otherwise.
         // Follow a format that reverses well if fed back to our importer
         // (although the importer can't accept an attachment via URL yet,
@@ -252,6 +245,9 @@ module.exports = {
         // plus _id.
         record._id = piece._id;
         schema.forEach(function (field) {
+          if (self.options.export.omitFields && self.options.export.omitFields.includes(field.name)) {
+            return;
+          }
           let value = piece[field.name];
           if ((typeof value) === 'object') {
             if (field.type.match(/^joinByArray/)) {
