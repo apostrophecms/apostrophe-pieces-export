@@ -237,7 +237,14 @@ module.exports = {
       };
 
       self.exportRecord = function (req, piece, record, callback) {
-        const schema = self.schema;
+        let schema = self.schema;
+        if (self.options.exportOmitProperties) {
+          for (let prop of self.options.exportOmitProperties) {
+            schema = schema.filter( (obj) => {
+              return obj.name !== prop;
+            });
+          }
+        }
         // Schemas don't have built-in exporters, for strings or otherwise.
         // Follow a format that reverses well if fed back to our importer
         // (although the importer can't accept an attachment via URL yet,
