@@ -259,7 +259,11 @@ module.exports = {
             } else if (field.type === 'attachment') {
               value = self.apos.attachments.url(value);
             } else if ((field.type === 'area') || (field.type === 'singleton')) {
-              value = self.apos.areas.richText(value);
+              if (field.exportAsPlaintext) {
+                value = self.apos.areas.plaintext(value);
+              } else {
+                value = self.apos.areas.richText(value);
+              }
             } else {
               value = '';
             }

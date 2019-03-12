@@ -25,7 +25,24 @@ describe('apostrophe-pieces-export', function () {
         'products': {
           extend: 'apostrophe-pieces',
           name: 'product',
-          export: true
+          export: true,
+          addFields: [
+            {
+              type: 'area',
+              name: 'richText',
+              widgets: {
+                'apostrophe-rich-text': {}
+              }
+            },
+            {
+              type: 'area',
+              name: 'plaintext',
+              widgets: {
+                'apostrophe-rich-text': {}
+              },
+              exportAsPlaintext: true
+            }
+          ]
         }
       },
       afterInit: function (callback) {
@@ -47,7 +64,25 @@ describe('apostrophe-pieces-export', function () {
     function insertNext () {
       var product = _.assign(apos.modules.products.newInstance(), {
         title: 'Cheese #' + padInteger(i, 5),
-        slug: 'cheese-' + padInteger(i, 5)
+        slug: 'cheese-' + padInteger(i, 5),
+        richText: {
+          type: 'area',
+          items: [
+            {
+              type: 'apostrophe-rich-text',
+              content: '<h4>This stays rich text.</h4>'
+            }
+          ]
+        },
+        plaintext: {
+          type: 'area',
+          items: [
+            {
+              type: 'apostrophe-rich-text',
+              content: '<h4>This becomes plaintext.</h4>'
+            }
+          ]
+        }
       });
       return apos.modules.products.insert(apos.tasks.getReq(), product).then(function () {
         i++;
@@ -75,6 +110,7 @@ describe('apostrophe-pieces-export', function () {
         results = _results;
       }
     }, {
+      published: 'yes',
       extension: 'csv',
       format: apos.modules.products.exportFormats.csv,
       // test multiple batches with a small number of products
@@ -91,6 +127,8 @@ describe('apostrophe-pieces-export', function () {
         assert(!err);
         assert(response.statusCode === 200);
         assert(body.match(/,Cheese #00001,/));
+        assert(body.indexOf(',<h4>This stays rich text.</h4>,') !== -1);
+        assert(body.indexOf(',This becomes plaintext.\n') !== -1);
         done();
       });
     });
