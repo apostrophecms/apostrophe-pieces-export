@@ -52,6 +52,14 @@ self.beforeExport = function(req, piece, record, callback) {
 
 **Always include a given property in every object exported, even if it is just empty.**
 
+## Exporting areas as plaintext versus rich text
+
+By default, this module exports areas as rich text. That is, you will receive simple HTML markup corresponding to any rich text widgets present in those areas.
+
+If you prefer, you can set the `exportAsPlaintext: true` option for an `area` or `singleton` schema field to export it as plaintext. In this case, tags are stripped and entities are un-escaped.
+
+> For historical reasons this module and `apostrophe-pieces-import` do not handle areas the same way by default. If you are using these two modules together, set either `importAsRichText: true` or `exportAsPlaintext: true` on each area where you want import and export to behave identically.
+
 ## File formats beyond CSV, TSV and Excel
 
 `apostrophe-pieces-export` supports `.csv`, `.tsv` and `.xlsx` right out of the box. But of course you want more.
