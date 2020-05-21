@@ -66,7 +66,7 @@ module.exports = {
       self.exportAddRoutes = function () {
         self.route('post', 'export-modal', function (req, res) {
           const data = {
-              options: {
+            options: {
               label: self.label,
               pluralLabel: self.pluralLabel,
               name: self.name
@@ -103,7 +103,7 @@ module.exports = {
               });
             }, callback);
           }
-         });
+        });
 
         self.route('post', 'export', function (req, res) {
           let draftOrLive = self.apos.launder.string(req.body.draftOrLive);
