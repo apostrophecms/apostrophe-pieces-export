@@ -1,5 +1,6 @@
 {%- extends "apostrophe-modal:baseSlideable.html" -%}
 {%- import 'apostrophe-ui:components/buttons.html' as buttons -%}
+{%- import 'apostrophe-ui:components/fields.html' as fields with context -%}
 
 {%- block modalClass -%}
   apos-pieces-export {{ data.options.name | css }}-import apos-ui-modal-no-sidebar apos-modal-slideable
@@ -41,6 +42,18 @@
           {%- endfor -%}
         </select>
       </fieldset>
+      {%- if data.filters -%}
+        {%- for filter in data.filters -%}
+          <fieldset class="apos-pieces-export-filter">
+            <label>{{ __(filter.label) }}</label>
+            <select name="{{ filter.name }}">
+              {% for choice in filter.choices %}
+                <option {{ 'checked' if loop.first }} value="{{ choice.value }}">{{ choice.label }}</option>
+              {% endfor %}
+            </select>
+          </fieldset>
+        {%- endfor -%}
+      {%- endif -%}
       {{ buttons.major('Export All', { action: 'export' }, 'apos-button--major apos-pieces-export-submit') }}
     </form>
   </div>
