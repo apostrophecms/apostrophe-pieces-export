@@ -95,7 +95,7 @@ module.exports = {
                 newFilter.choices = [
                   {
                     value: '',
-                    label: 'CHOOSE ONE'
+                    label: 'Choose One'
                   }
                 ].concat(choices);
                 data.filters.push(newFilter);
