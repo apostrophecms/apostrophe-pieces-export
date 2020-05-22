@@ -65,20 +65,56 @@ module.exports = {
 
       self.exportAddRoutes = function () {
         self.route('post', 'export-modal', function (req, res) {
-          return res.send(self.render(req, 'exportModal', {
+          const data = {
             options: {
               label: self.label,
               pluralLabel: self.pluralLabel,
               name: self.name
             },
             exportFormats: self.exportFormats
-          }));
+          };
+          return async.series([ exportFilters ], function(err) {
+            if (err) {
+              self.apos.utils.error(err);
+              return res.status(500).send('error');
+            }
+            return res.send(self.render(req, 'exportModal', data));
+          });
+
+          function exportFilters(callback) {
+            if (!self.options.export.filters) {
+              return callback(null);
+            }
+            data.filters = [];
+            return async.eachSeries(self.options.export.filters, function(filter, callback) {
+              var newFilter = {
+                name: filter.name,
+                label: filter.label
+              };
+              return self.find(req).toChoices(filter.name, function(err, choices) {
+                newFilter.choices = [
+                  {
+                    value: '',
+                    label: 'Choose One'
+                  }
+                ].concat(choices);
+                data.filters.push(newFilter);
+                return callback(err);
+              });
+            }, callback);
+          }
         });
 
         self.route('post', 'export', function (req, res) {
           let draftOrLive = self.apos.launder.string(req.body.draftOrLive);
           let published = self.apos.launder.string(req.body.published);
           let extension = self.apos.launder.string(req.body.extension);
+          const filters = {};
+          _.each(self.options.export.filters || [], function(filter) {
+            if (_.has(req.body, filter.name)) {
+              filters[filter.name] = self.apos.launder.string(req.body[filter.name]);
+            }
+          });
           if (!self.exportFormats[extension]) {
             return res.send({ status: 'invalid' });
           }
@@ -90,7 +126,8 @@ module.exports = {
                 draftOrLive: draftOrLive,
                 published: published,
                 extension: extension,
-                format: format
+                format: format,
+                filters: filters
               }, callback);
             },
             {
@@ -196,7 +233,7 @@ module.exports = {
           return {};
 
           function nextBatch (callback) {
-            return self.find(req).published(published).sort({ _id: 1 }).and({ _id: { $gt: lastId } }).limit(options.batchSize || 100).toArray(function (err, batch) {
+            return self.find(req).published(published).sort({ _id: 1 }).and({ _id: { $gt: lastId } }).limit(options.batchSize || 100).queryToFilters(options.filters || {}, 'manage').toArray(function (err, batch) {
               if (err) {
                 return callback(err);
               }

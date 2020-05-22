@@ -36,6 +36,24 @@ modules: {
 
 Just click the "export" button in the "manage" view of your pieces. A progress display will appear. Once the export has completed, you will be instructed to click "Done," at which point the file will be downloaded. **For space and security reasons, export files expire after one hour,** so keep this in mind if you walk away from the export process.
 
+## Adding filters to the export dialog box
+
+The export dialog box has basic support for custom filters. You may add them like this:
+
+```javascript
+  'my-module-that-extends-pieces': {
+    export: {
+      filters: {
+        // Filter on the standard `tags` schema field
+        name: 'tags',
+        label: 'Tags'
+      }
+    }
+  }
+```
+
+The basic rule is that **if a field supports being used as a filter in the "Manage" view of pieces, it will work here too.** Most field types will work. However, multiple select is not currently supported. We do not recommend the use of this feature if the number of choices is very large (more than 100). Bear in mind that users can also filter data later in their spreadsheet or database of choice.
+
 ## Extending the export process for your piece type
 
 The exporter relies on a simple conversion from each standard field type to a string. That conversion works well for the same field types that import well with `apostrophe-pieces-importer`.
