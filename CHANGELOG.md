@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.3.1
+
+* Updates lodash and ApostropheCMS dependencies to resolve lodash and node-fetch vulnerability warnings.
+
 ### 2.3.0
 
 * Added a `filters` option, allowing custom filters to be added to the export dialog box. Thanks to Michelin for making this work possible via Apostrophe Enterprise Support.
