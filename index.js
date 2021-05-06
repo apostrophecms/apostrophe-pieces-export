@@ -143,7 +143,7 @@ module.exports = {
 
         self.exportRun = function (req, reporting, options, callback) {
           const draftOrLive = options.draftOrLive;
-          const published = options.published === 'both' ? null : options.published === 'yes';
+          const published = options.published === 'both' || options.published === '' ? null : options.published === 'yes';
           const extension = options.extension;
           const format = options.format;
           let filename = self.apos.attachments.uploadfs.getTempPath() + '/' + self.apos.utils.generateId() + '-export.' + extension;
