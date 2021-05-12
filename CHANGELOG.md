@@ -1,6 +1,6 @@
 ## Changelog
 
-##UNRELEASED
+## UNRELEASED
 
 * Include Workflow filter only for pieces included in Apostrophe Workflow.
 * Added a `filterByPublished` option to allow the filter to be deactivated. By default the filter is activated for all the pieces.
