@@ -1,5 +1,10 @@
 ## Changelog
 
+##UNRELEASED
+
+* Include Workflow filter only for pieces included in Apostrophe Workflow.
+* Added a `filterByPublished` option to allow the filter to be deactivated. By default the filter is activated for all the pieces.
+
 ### 2.3.1
 
 * Updates lodash and ApostropheCMS dependencies to resolve lodash and node-fetch vulnerability warnings.
