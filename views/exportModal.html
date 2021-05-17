@@ -17,7 +17,7 @@
 {%- block body -%}
   <div class="apos-pieces-export-body">
     <form class="apos-form" data-apos-form enctype="multipart/form-data" method="POST">
-      {% if apos.modules['apostrophe-workflow'] %}
+      {% if data.options.filterByWorkflow %}
         <fieldset>
           <label>{{ __('Draft content, or live content?') }}</label>
           <select name="draft-or-live">
@@ -26,14 +26,16 @@
           </select>
         </fieldset>
       {% endif %}
-      <fieldset>
-        <label>{{ __('Published, or unpublished?') }}</label>
-        <select name="published">
-          <option value="yes">{{ __('Published') }}</option>
-          <option value="no">{{ __('Unpublished') }}</option>
-          <option value="both">{{ __('Both') }}</option>
-        </select>
-      </fieldset>
+      {% if data.options.filterByPublished %}
+        <fieldset>
+          <label>{{ __('Published, or unpublished?') }}</label>
+          <select name="published">
+            <option value="yes">{{ __('Published') }}</option>
+            <option value="no">{{ __('Unpublished') }}</option>
+            <option value="both">{{ __('Both') }}</option>
+          </select>
+        </fieldset>
+      {% endif %}
       <fieldset>
         <label>{{ __('What file format?') }}</label>
         <select name="extension">

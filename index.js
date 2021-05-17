@@ -69,7 +69,9 @@ module.exports = {
             options: {
               label: self.label,
               pluralLabel: self.pluralLabel,
-              name: self.name
+              name: self.name,
+              filterByWorkflow: self.apos.modules['apostrophe-workflow'] && !self.apos.modules['apostrophe-workflow'].includeType(self.name),
+              filterByPublished: self.options.export.filterByPublished !== false
             },
             exportFormats: self.exportFormats
           };
@@ -141,7 +143,7 @@ module.exports = {
 
         self.exportRun = function (req, reporting, options, callback) {
           const draftOrLive = options.draftOrLive;
-          const published = options.published === 'both' ? null : options.published === 'yes';
+          const published = options.published === 'both' || options.published === '' ? null : options.published === 'yes';
           const extension = options.extension;
           const format = options.format;
           let filename = self.apos.attachments.uploadfs.getTempPath() + '/' + self.apos.utils.generateId() + '-export.' + extension;
