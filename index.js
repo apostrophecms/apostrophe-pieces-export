@@ -70,7 +70,7 @@ module.exports = {
               label: self.label,
               pluralLabel: self.pluralLabel,
               name: self.name,
-              filterByWorkflow: self.apos.modules['apostrophe-workflow'] && !self.apos.modules['apostrophe-workflow'].includeType(self.name),
+              filterByWorkflow: self.apos.modules['apostrophe-workflow'] && self.apos.modules['apostrophe-workflow'].includeType(self.name),
               filterByPublished: self.options.export.filterByPublished !== false
             },
             exportFormats: self.exportFormats
