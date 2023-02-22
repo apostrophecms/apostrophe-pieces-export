@@ -1,5 +1,9 @@
 ## Changelog
 
+## UNRELEASED
+
+* Bump xlsx package to its latest version to remove vulnerabilities.
+
 ## 2.4.1
 
 * Fix Include Workflow filter
